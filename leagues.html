@@ -1938,7 +1938,7 @@ document.addEventListener('keydown', function(e) {
     div[style*="padding:120px 40px"] { padding-top: 48px !important; padding-bottom: 48px !important; }
     div[style*="padding:80px 40px"]  { padding-top: 40px !important; padding-bottom: 40px !important; }
     div[style*="padding:70px 40px"]  { padding-top: 36px !important; padding-bottom: 36px !important; }
-    div[style*="padding:60px 40px"]  { padding-top: 32px !important; padding-bottom: 32px !important; }
+    div[style*="padding:60px 40px"]  { padding-top: 22px !important; padding-bottom: 22px !important; }
     div[style*="padding:50px 40px"]  { padding-top: 28px !important; padding-bottom: 28px !important; }
     div[style*="padding:30px 40px"]  { padding: 20px 18px !important; }
 
@@ -1962,10 +1962,73 @@ document.addEventListener('keydown', function(e) {
         gap: 12px !important;
     }
 
-    /* ── Prizes: stack ── */
-    div[style*="grid-template-columns:repeat(3,1fr)"] {
-        grid-template-columns: 1fr !important;
-        gap: 12px !important;
+    /* ── Prize cards: stay 3-col but compact ── */
+    div[style*="grid-template-columns:repeat(3,1fr)"][style*="gap:18px"] {
+        grid-template-columns: repeat(3,1fr) !important;
+        gap: 7px !important;
+    }
+    div[style*="padding:30px 24px;text-align:center;display:flex"] {
+        padding: 10px 7px !important;
+    }
+    div[style*="padding:30px 24px;text-align:center;display:flex"] > div[style*="font-size:2.6em"] {
+        font-size: 1.3em !important; margin-bottom: 3px !important;
+    }
+    div[style*="padding:30px 24px;text-align:center;display:flex"] > div[style*="font-size:1.1em"] {
+        font-size: 0.65em !important; margin-bottom: 5px !important;
+    }
+    div[style*="padding:30px 24px;text-align:center;display:flex"] div[style*="font-size:0.7em"] {
+        display: none !important;
+    }
+    div[style*="padding:30px 24px;text-align:center;display:flex"] div[style*="font-size:2.8em"] {
+        font-size: 1.6em !important; margin-bottom: 2px !important;
+    }
+    div[style*="padding:30px 24px;text-align:center;display:flex"] div[style*="font-size:0.78em"] {
+        font-size: 0.65em !important; margin-bottom: 0 !important;
+    }
+    div[style*="margin-top:auto;border-top"] { display: none !important; }
+
+    /* ── Prizes section: tighter header ── */
+    div[style*="padding:60px 40px;background:#0a0a0a"] > div > div[style*="text-align:center;margin-bottom:30px"] {
+        margin-bottom: 12px !important;
+    }
+    div[style*="padding:60px 40px;background:#0a0a0a"] > div > div[style*="text-align:center;margin-bottom:30px"] h2 {
+        font-size: 1.3em !important;
+    }
+    /* Unlock callout: compact */
+    div[style*="border-radius:14px;padding:24px 28px;margin-bottom:28px"] {
+        padding: 10px 12px !important; margin-bottom: 10px !important;
+    }
+    div[style*="border-radius:14px;padding:24px 28px;margin-bottom:28px"] > div[style*="margin-bottom:12px"] {
+        margin-bottom: 6px !important; font-size: 0.6em !important;
+    }
+    div[style*="border-radius:14px;padding:24px 28px;margin-bottom:28px"] > div[style*="font-size:1.4em"] {
+        font-size: 0.95em !important; margin-bottom: 4px !important;
+    }
+    div[style*="border-radius:14px;padding:24px 28px;margin-bottom:28px"] > p {
+        font-size: 0.75em !important; margin-bottom: 8px !important;
+    }
+    div[style*="border-radius:14px;padding:24px 28px;margin-bottom:28px"] > div[style*="display:flex"] > div {
+        padding: 5px 10px !important; font-size: 0.72em !important;
+    }
+
+    /* ── Pricing boxes: compact ── */
+    div[style*="border-radius:14px;padding:28px;margin-bottom:14px"] {
+        padding: 14px !important; margin-bottom: 8px !important;
+    }
+    div[style*="border-radius:14px;padding:28px;margin-bottom:14px"] div[style*="font-size:2.6em"] {
+        font-size: 1.8em !important;
+    }
+    div[style*="background:#111;border:1px solid #2a2a2a;border-radius:14px;padding:28px"] {
+        padding: 14px !important;
+    }
+    div[style*="background:#111;border:1px solid #2a2a2a;border-radius:14px;padding:28px"] div[style*="font-size:2.6em"] {
+        font-size: 1.8em !important;
+    }
+    div[style*="border-radius:14px;padding:30px;flex:1"] {
+        padding: 14px !important;
+    }
+    div[style*="border-radius:14px;padding:30px;flex:1"] p {
+        font-size: 0.82em !important; margin-bottom: 14px !important;
     }
 
     /* ── Lotus schedule track cards: 2-col ── */
