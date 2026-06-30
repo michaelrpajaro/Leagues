@@ -1566,7 +1566,7 @@ function openResultsModal(league, weekNum) {
     html += '<a href="https://www.youtube.com/@SIM1Racing" target="_blank" rel="noopener" style="font-family:\'Barlow\',sans-serif;font-size:0.9em;color:#EF4444;text-decoration:none;">Watch replay on YouTube &rarr;</a>';
     html += '</div>';
   } else {
-    html += '<div style="padding:24px 28px;display:flex;flex-direction:column;gap:28px;">';
+    html += '<div style="padding:20px 24px;display:flex;flex-direction:column;gap:24px;">';
 
     if (data.quali) {
       html += buildResultTable('Qualifying Results', data.quali.headers, data.quali.rows, null);
@@ -1587,84 +1587,72 @@ function openResultsModal(league, weekNum) {
 }
 
 function buildResultTable(title, headers, rows, flData) {
-  var colCount = headers.length;
-  var colDefs = headers.map(function(h) {
-    if (h === 'Pos') return '42px';
-    if (h === 'Driver') return '1fr';
-    return 'auto';
-  }).join(' ');
+  // Strip 'Car' column
+  var carIdx = headers.indexOf('Car');
+  var hh = carIdx >= 0 ? headers.filter(function(_,i){return i!==carIdx;}) : headers.slice();
+  var rr = rows.map(function(r){ return carIdx >= 0 ? r.filter(function(_,i){return i!==carIdx;}) : r.slice(); });
 
-  var html = '<div>';
-  html += '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:0.78em;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#EF4444;margin-bottom:10px;">' + title + '</div>';
-  html += '<div style="background:#0d0d0d;border:1px solid #1e1e1e;border-radius:10px;overflow:hidden;">';
+  function colWidth(h) {
+    if (h==='Pos')    return '40px';
+    if (h==='Driver') return '';
+    if (h==='Laps')   return '52px';
+    if (h==='Time')   return '106px';
+    if (h==='Gap')    return '106px';
+    if (h==='Lap')    return '44px';
+    if (h==='S1'||h==='S2'||h==='S3') return '74px';
+    return '80px';
+  }
 
-  // Header
-  html += '<div style="display:grid;grid-template-columns:' + colDefs + ';background:#0a0a0a;border-bottom:1px solid #1a1a1a;font-family:\'Barlow Condensed\',sans-serif;font-size:0.65em;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#777;">';
-  headers.forEach(function(h, i) {
-    var isLast = i === headers.length - 1;
-    var align = (i > 1) ? 'text-align:right;' : '';
-    var border = isLast ? '' : 'border-right:1px solid #1e1e1e;';
-    var pl = i === 0 ? 'padding:9px 12px 9px 16px;' : 'padding:9px 12px;';
-    var pr = isLast ? 'padding:9px 16px 9px 12px;' : '';
-    html += '<div style="' + align + border + (pr || pl) + 'white-space:nowrap;">' + h + '</div>';
-  });
-  html += '</div>';
-
-  // Rows
-  rows.forEach(function(row, ri) {
-    var bg = ri === rows.length - 1 ? '' : 'border-bottom:1px solid #161616;';
-    var posColor = row[0] === '1' ? '#ffce4a' : row[0] === '2' ? '#c8cfd6' : row[0] === '3' ? '#e0954d' : '#999';
-    html += '<div style="display:grid;grid-template-columns:' + colDefs + ';' + bg + 'align-items:center;">';
-    row.forEach(function(cell, ci) {
-      var isLast = ci === row.length - 1;
+  function makeTable(hdrs, dataRows, small) {
+    var sz = small ? 0.88 : 1;
+    var t = '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">';
+    t += '<table style="width:100%;border-collapse:collapse;background:#0d0d0d;border:1px solid #1e1e1e;border-radius:10px;overflow:hidden;">';
+    t += '<colgroup>';
+    hdrs.forEach(function(h){ var w=colWidth(h); t += w ? '<col style="width:'+w+'">' : '<col>'; });
+    t += '</colgroup>';
+    // header row
+    t += '<thead><tr style="background:#0a0a0a;">';
+    hdrs.forEach(function(h,i){
+      var isLast = i===hdrs.length-1;
+      var align  = i>=2 ? 'text-align:right;' : '';
       var border = isLast ? '' : 'border-right:1px solid #1e1e1e;';
-      var pad = ci === 0 ? 'padding:10px 12px 10px 16px;' : (isLast ? 'padding:10px 16px 10px 12px;' : 'padding:10px 12px;');
-      var style = 'font-family:\'Barlow\',sans-serif;font-size:0.85em;color:#ccc;' + border + pad;
-      if (ci === 0) style = 'font-family:\'Barlow Condensed\',sans-serif;font-size:1.1em;font-weight:900;color:' + posColor + ';' + border + pad;
-      else if (ci === 1) style = 'font-family:\'Barlow Condensed\',sans-serif;font-size:0.95em;font-weight:700;color:white;' + border + pad;
-      else style = 'font-family:\'Barlow\',sans-serif;font-size:0.82em;color:#aaa;text-align:right;' + border + pad;
-      html += '<div style="' + style + '">' + cell + '</div>';
+      var pad    = i===0 ? 'padding:9px 10px 9px 14px;' : (isLast ? 'padding:9px 14px 9px 10px;' : 'padding:9px 10px;');
+      t += '<th style="font-family:\'Barlow Condensed\',sans-serif;font-size:'+(0.65*sz)+'em;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#777;white-space:nowrap;border-bottom:1px solid #1a1a1a;'+align+border+pad+'">'+h+'</th>';
     });
-    html += '</div>';
-  });
-
-  html += '</div>';
-
-  // Fastest laps sub-table
-  if (flData) {
-    html += '<div style="margin-top:12px;">';
-    html += '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:0.68em;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#777;margin-bottom:8px;">Fastest Laps</div>';
-    var flCols = flData.headers.map(function(h) {
-      if (h === 'Pos') return '36px';
-      if (h === 'Driver') return '1fr';
-      return 'auto';
-    }).join(' ');
-    html += '<div style="background:#0a0a0a;border:1px solid #1a1a1a;border-radius:8px;overflow:hidden;">';
-    html += '<div style="display:grid;grid-template-columns:' + flCols + ';background:#080808;border-bottom:1px solid #161616;font-family:\'Barlow Condensed\',sans-serif;font-size:0.6em;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#666;">';
-    flData.headers.forEach(function(h, i) {
-      var isLast = i === flData.headers.length - 1;
-      var align = (i > 1) ? 'text-align:right;' : '';
-      var border = isLast ? '' : 'border-right:1px solid #1e1e1e;';
-      var pad = i === 0 ? 'padding:8px 10px 8px 14px;' : (isLast ? 'padding:8px 14px 8px 10px;' : 'padding:8px 10px;');
-      html += '<div style="' + align + border + pad + 'white-space:nowrap;">' + h + '</div>';
-    });
-    html += '</div>';
-    flData.rows.forEach(function(row, ri) {
-      var bg = ri === flData.rows.length - 1 ? '' : 'border-bottom:1px solid #111;';
-      html += '<div style="display:grid;grid-template-columns:' + flCols + ';' + bg + 'align-items:center;">';
-      row.forEach(function(cell, ci) {
-        var isLast = ci === row.length - 1;
+    t += '</tr></thead><tbody>';
+    dataRows.forEach(function(row,ri){
+      var posColor = row[0]==='1'?'#ffce4a':row[0]==='2'?'#c8cfd6':row[0]==='3'?'#e0954d':'#999';
+      var rowBorder = ri<dataRows.length-1 ? 'border-bottom:1px solid #161616;' : '';
+      t += '<tr style="'+rowBorder+'">';
+      row.forEach(function(cell,ci){
+        var isLast = ci===row.length-1;
         var border = isLast ? '' : 'border-right:1px solid #1e1e1e;';
-        var pad = ci === 0 ? 'padding:8px 10px 8px 14px;' : (isLast ? 'padding:8px 14px 8px 10px;' : 'padding:8px 10px;');
+        var align  = ci>=2 ? 'text-align:right;' : '';
+        var pad    = ci===0 ? 'padding:10px 10px 10px 14px;' : (isLast ? 'padding:10px 14px 10px 10px;' : 'padding:10px;');
         var style;
-        if (ci === 0) style = 'font-family:\'Barlow Condensed\',sans-serif;font-size:0.95em;font-weight:900;color:#999;' + border + pad;
-        else if (ci === 1) style = 'font-family:\'Barlow Condensed\',sans-serif;font-size:0.82em;font-weight:700;color:#ccc;' + border + pad;
-        else style = 'font-family:\'Barlow\',sans-serif;font-size:0.76em;color:#888;text-align:right;' + border + pad;
-        html += '<div style="' + style + '">' + cell + '</div>';
+        if (ci===0) style='font-family:\'Barlow Condensed\',sans-serif;font-size:'+(1.05*sz)+'em;font-weight:900;color:'+posColor+';'+border+pad;
+        else if (ci===1) style='font-family:\'Barlow Condensed\',sans-serif;font-size:'+(0.92*sz)+'em;font-weight:700;color:white;'+border+pad;
+        else style='font-family:\'Barlow\',sans-serif;font-size:'+(0.82*sz)+'em;color:#aaa;'+align+border+pad;
+        t += '<td style="'+style+'">'+cell+'</td>';
       });
-      html += '</div>';
+      t += '</tr>';
     });
-    html += '</div></div>';
+    t += '</tbody></table></div>';
+    return t;
+  }
+
+  var html = '<div style="margin-bottom:4px;">';
+  html += '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:0.78em;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#EF4444;margin-bottom:8px;">'+title+'</div>';
+  html += makeTable(hh, rr, false);
+
+  if (flData) {
+    var fcIdx = flData.headers.indexOf('Car');
+    var fh = fcIdx>=0 ? flData.headers.filter(function(_,i){return i!==fcIdx;}) : flData.headers.slice();
+    var fr = flData.rows.map(function(r){ return fcIdx>=0 ? r.filter(function(_,i){return i!==fcIdx;}) : r.slice(); });
+    html += '<div style="margin-top:10px;">';
+    html += '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:0.62em;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:6px;">Fastest Laps</div>';
+    html += makeTable(fh, fr, true);
+    html += '</div>';
   }
 
   html += '</div>';
@@ -1746,5 +1734,19 @@ document.addEventListener('keydown', function(e) {
         padding-right:12px !important;
         font-size:0.9em !important;
     }
+    /* Results modal — full screen on mobile */
+    #resultsModal { padding:0 !important; }
+    #resultsModal > div {
+        max-width:100% !important;
+        margin:0 !important;
+        min-height:100dvh;
+        border-radius:0 !important;
+        border-left:none !important;
+        border-right:none !important;
+    }
+    /* Modal header + body padding tighter on mobile */
+    #resultsModal [style*="padding:22px 28px"] { padding:16px 16px !important; }
+    #resultsModal [style*="padding:20px 24px"] { padding:14px 12px !important; }
+    #resultsModal [style*="padding:40px 28px"] { padding:32px 16px !important; }
 }
 </style>
